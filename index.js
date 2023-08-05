@@ -1,7 +1,6 @@
 let canvas = document.getElementById('canvas')
 let context = canvas.getContext('2d')
 
-
 // CONSTANTS
 const CANVASHEIGHT = canvas.height
 const CANVASWIDTH = canvas.width
@@ -11,11 +10,6 @@ const RIGHT_ARROW = 39
 const DOWN_ARROW = 40
 const Z_KEY = 90
 const X_KEY = 88
-
-// for(let i = 0; i < CANVASWIDTH; i += PIXEL){
-//   context.fillStyle = "red"
-//   context.fillRect(i,0,PIXEL,PIXEL)
-// }
 
 const COLORS = {
   0: 'black',
@@ -29,7 +23,7 @@ const COLORS = {
   8: 'cyan',
 }
 
-// PECES
+// PIECES
 const I_STATES = {
   0: [
     [0, 0, 1, 0],
@@ -191,7 +185,7 @@ const tetromino = {
 }
 
 const player = {
-  position: { x: 4, y: 2 },
+  position: { x: 4, y: 0 },
   piece: tetromino.I,
   move: {
     left: () => player.position.x--,
@@ -276,18 +270,13 @@ document.addEventListener('keydown', event => {
 
 // UPDATING
 let lastime = 0
-function update(time = 0) {
+const update = (time = 0) => {
   const deltaTime = time - lastime
   lastime = time
   // dropCounter += deltaTime
   context.clearRect(0,0,CANVASWIDTH, CANVASHEIGHT)
   //drawPiece(tetromino.I[0])
-  drawPiece(tetromino.J[0])
-  //drawPiece(tetromino.L[0])
-  //drawPiece(tetromino.O[0])
-  //drawPiece(tetromino.S[0])
-  //drawPiece(tetromino.Z[0])
-  //drawPiece(tetromino.T[0])
+  drawPiece(player.piece[0])
   requestAnimationFrame(update)
 }
 
