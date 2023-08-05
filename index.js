@@ -74,7 +74,6 @@ const T_STATES = {
   ]
 }
 
-//TODO eu não sei girar esses de baixo e tô com preguiças
 const L_STATES = {
   0: [
     [0, 3, 0],
@@ -82,19 +81,19 @@ const L_STATES = {
     [0, 3, 3],
   ],
   1: [
-    [0, 3, 0],
-    [0, 3, 0],
-    [0, 3, 3],
+    [0, 0, 0],
+    [3, 3, 3],
+    [3, 0, 0],
   ],
   2: [
+    [3, 3, 0],
     [0, 3, 0],
     [0, 3, 0],
-    [0, 3, 3],
   ],
   3: [
-    [0, 3, 0],
-    [0, 3, 0],
-    [0, 3, 3],
+    [0, 0, 3],
+    [3, 3, 3],
+    [0, 0, 0],
   ]
 }
 
@@ -105,19 +104,19 @@ const J_STATES = {
     [4, 4, 0],
   ],
   1: [
-    [0, 4, 0],
-    [0, 4, 0],
-    [4, 4, 0],
+    [4, 0, 0],
+    [4, 4, 4],
+    [0, 0, 0],
   ],
   2: [
+    [0, 4, 4],
     [0, 4, 0],
     [0, 4, 0],
-    [4, 4, 0],
   ],
   3: [
-    [0, 4, 0],
-    [0, 4, 0],
-    [4, 4, 0],
+    [0, 0, 0],
+    [4, 4, 4],
+    [0, 0, 4],
   ],
 }
 
@@ -130,48 +129,48 @@ const O_STATES = {
 
 const S_STATES = {
   0: [
-    [0, 5, 5],
-    [5, 5, 0],
+    [0, 6, 6],
+    [6, 6, 0],
     [0, 0, 0]
   ],
   1: [
-    [0, 5, 5],
-    [5, 5, 0],
-    [0, 0, 0]
+    [0, 6, 0],
+    [0, 6, 6],
+    [0, 0, 6]
   ],
   2: [
-    [0, 5, 5],
-    [5, 5, 0],
-    [0, 0, 0]
+    [0, 0, 0],
+    [0, 6, 6],
+    [6, 6, 0]
   ],
   3: [
-    [0, 5, 5],
-    [5, 5, 0],
-    [0, 0, 0]
-  ]
+    [6, 0, 0],
+    [6, 6, 0],
+    [0, 6, 0]
+  ],
 }
 
 const Z_STATES = {
   0: [
-    [6, 6, 0],
-    [0, 6, 6],
+    [7, 7, 0],
+    [0, 7, 7],
     [0, 0, 0]
   ],
   1: [
-    [6, 6, 0],
-    [0, 6, 6],
-    [0, 0, 0]
+    [0, 0, 7],
+    [0, 7, 7],
+    [0, 7, 0]
   ],
   2: [
-    [6, 6, 0],
-    [0, 6, 6],
-    [0, 0, 0]
+    [0, 0, 0],
+    [7, 7, 0],
+    [0, 7, 7]
   ],
   3: [
-    [6, 6, 0],
-    [0, 6, 6],
-    [0, 0, 0]
-  ]
+    [0, 7, 0],
+    [7, 7, 0],
+    [7, 0, 0]
+  ],
 }
 
 const tetromino = {
@@ -186,12 +185,19 @@ const tetromino = {
 
 const player = {
   position: { x: 4, y: 0 },
-  piece: tetromino.I,
+  piece: {
+    tetromino: tetromino.T,
+    rotation: 0
+  },
   move: {
     left: () => player.position.x--,
     right: () => player.position.x++,
     down: () => player.position.y++
-  } 
+  },
+  rotate: {
+    l: () => rotateL(1),
+    r: () => rotateR(1),
+  }
 }
 
 // DRAWING
@@ -213,15 +219,31 @@ const drawPiece = piece => {
         let pieceColorIndex = piece[row][col]
         let startColor = getColorByIndex(pieceColorIndex)
         let endColor = getColorByIndex(pieceColorIndex + 1)
+        let pixelCol = col + player.position.x
+        let pixelRow = row + player.position.y
         
-        drawPixel(
-          col + player.position.x,
-          row + player.position.y,
-          startColor,
-          endColor)
+        drawPixel(pixelCol, pixelRow, startColor, endColor)
       }
     }
   }
+}
+
+//ROTATING
+const rotateR = (steps) => {
+  let currentTetromino = player.piece.tetromino
+  let currentRotation = player.piece.rotation
+  let maxRotation = Object.values(currentTetromino).length - 1
+  let safeRotateAmount = currentRotation < maxRotation ? steps : -currentRotation
+  return player.piece.rotation += safeRotateAmount
+}
+
+const rotateL = (steps) => {
+  let currentTetromino = player.piece.tetromino
+  let currentRotation = player.piece.rotation
+  let maxRotation = Object.values(currentTetromino).length - 1
+  let minRotation = 0
+  let safeRotateAmount = currentRotation > minRotation ? -steps : maxRotation
+  return player.piece.rotation += safeRotateAmount
 }
 
 // MOVING
@@ -234,7 +256,9 @@ const getKeysPressedState = (event) => {
   return {
     left: validateEventKey(event, LEFT_ARROW),
     right: validateEventKey(event, RIGHT_ARROW),
-    down: validateEventKey(event, DOWN_ARROW)
+    down: validateEventKey(event, DOWN_ARROW),
+    rotateL: validateEventKey(event, Z_KEY),
+    rotateR: validateEventKey(event, X_KEY) 
   }
 }
 
@@ -256,6 +280,10 @@ const keyPressed = event => {
     break;
     case 'down': player.move.down()
     break;
+    case 'rotateL': player.rotate.l()
+    break;
+    case 'rotateR': player.rotate.r()
+    break;
   }
   // else if (validateEventKey(event, Z_KEY)) {
   //   rotateAction(ROTATE_LEFT)
@@ -276,7 +304,7 @@ const update = (time = 0) => {
   // dropCounter += deltaTime
   context.clearRect(0,0,CANVASWIDTH, CANVASHEIGHT)
   //drawPiece(tetromino.I[0])
-  drawPiece(player.piece[0])
+  drawPiece(player.piece.tetromino[player.piece.rotation])
   requestAnimationFrame(update)
 }
 
