@@ -285,11 +285,6 @@ const keyPressed = event => {
     case 'rotateR': player.rotate.r()
     break;
   }
-  // else if (validateEventKey(event, Z_KEY)) {
-  //   rotateAction(ROTATE_LEFT)
-  // } else if (validateEventKey(event, X_KEY)) {
-  //   rotateAction(ROTATE_RIGHT)
-  // }
 }
 
 document.addEventListener('keydown', event => {
