@@ -195,8 +195,8 @@ const player = {
     down: () => player.position.y++
   },
   rotate: {
-    l: () => rotateL(1),
-    r: () => rotateR(1),
+    l: () => rotateL(),
+    r: () => rotateR(),
   }
 }
 
@@ -229,20 +229,20 @@ const drawPiece = piece => {
 }
 
 //ROTATING
-const rotateR = (steps) => {
+const rotateR = () => {
   let currentTetromino = player.piece.tetromino
   let currentRotation = player.piece.rotation
   let maxRotation = Object.values(currentTetromino).length - 1
-  let safeRotateAmount = currentRotation < maxRotation ? steps : -currentRotation
+  let safeRotateAmount = currentRotation < maxRotation ? 1 : -currentRotation
   return player.piece.rotation += safeRotateAmount
 }
 
-const rotateL = (steps) => {
+const rotateL = () => {
   let currentTetromino = player.piece.tetromino
   let currentRotation = player.piece.rotation
   let maxRotation = Object.values(currentTetromino).length - 1
   let minRotation = 0
-  let safeRotateAmount = currentRotation > minRotation ? -steps : maxRotation
+  let safeRotateAmount = currentRotation > minRotation ? -1 : maxRotation
   return player.piece.rotation += safeRotateAmount
 }
 
