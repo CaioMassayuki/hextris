@@ -224,6 +224,7 @@ const createPixelData = (posX, posY, colorIndex) => {
 //e nem tem cor 0
 //Importante pra colisão
 let pixelData = [
+  createPixelData(6,8,1),
   createPixelData(5,8,1),
   createPixelData(5,9,1),
   createPixelData(5,10,1),
@@ -365,7 +366,7 @@ const willPieceCollide = (piece, desiredXAmount = 0, desiredYAmount = 0, rotateA
 
 const tryForceRotationNearby = (piece, rotateAmount, direction = 'L') => {
   let translatedDirection = direction === 'L' ? 1 : -1
-  
+
   if(!willPieceCollide(piece, 0, 0, rotateAmount)){
     piece.rotation += rotateAmount
   }
@@ -373,12 +374,12 @@ const tryForceRotationNearby = (piece, rotateAmount, direction = 'L') => {
     piece.position.x += translatedDirection
     piece.rotation += rotateAmount
   }
-  else if(!willPieceCollide(piece, -translatedDirection, 0, rotateAmount)){
-    piece.position.x -= translatedDirection
-    piece.rotation += rotateAmount
-  }
   else if(!willPieceCollide(piece, 0, -1, rotateAmount)){
     piece.position.y -= 1
+    piece.rotation += rotateAmount
+  }
+  else if(!willPieceCollide(piece, -translatedDirection, 0, rotateAmount)){
+    piece.position.x -= translatedDirection
     piece.rotation += rotateAmount
   }
   else if(!willPieceCollide(piece, 0, 1, rotateAmount)){
