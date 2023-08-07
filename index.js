@@ -183,21 +183,72 @@ const tetromino = {
   Z: Z_STATES
 }
 
+let arena = [
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,]
+]
+
+let pixelData = [
+  {x: 5, y: 8, color: 1},
+  {x: 5, y: 9, color: 1},
+  {x: 5, y: 10, color: 1},
+  {x: 5, y: 11, color: 1}]
+
 const player = {
-  position: { x: 4, y: 0 },
   piece: {
+    position: { x: 4, y: 0 },
     tetromino: tetromino.T,
     rotation: 0
   },
   move: {
-    left: () => player.position.x--,
-    right: () => player.position.x++,
-    down: () => player.position.y++
+    left: () => movePiece(player.piece, -1, 0),
+    right: () => movePiece(player.piece, 1, 0),
+    down: () => movePiece(player.piece, 0, 1),
   },
   rotate: {
-    l: () => rotateL(),
-    r: () => rotateR(),
+    l: () => rotateL(player.piece),
+    r: () => rotateR(player.piece),
   }
+}
+
+// POSITION
+const translatePiecePosition = piece => {
+  let pieceX = piece.position.x
+  let pieceY = piece.position.y
+  let tetromino = piece.tetromino[piece.rotation]
+
+  let pixelCoordinates = []
+
+  for(let row = 0; row < tetromino.length; row++) {
+    for (let col = 0; col < tetromino[row].length; col++) {
+      if(tetromino[row][col] != 0) {
+        pixelCoordinates.push({
+          x: pieceX+col,
+          y: pieceY+row,
+          color: tetromino[row][col]
+        })
+      }
+    }
+  }
+  return pixelCoordinates
 }
 
 // DRAWING
@@ -206,47 +257,139 @@ const getColorByIndex = (index) => COLORS[index]
 const drawPixel = (colNumber, rowNumber, startColor, endColor = startColor) => {
   const grd = context.createLinearGradient(0, 0, CANVASWIDTH, CANVASHEIGHT)
   grd.addColorStop(0, startColor)
+  grd.addColorStop(0.5, startColor)
   grd.addColorStop(1, endColor)
 
   context.fillStyle = grd
   context.fillRect(colNumber * PIXEL, rowNumber * PIXEL, PIXEL, PIXEL)
 }
 
-const drawPiece = piece => {
-  for (let row = 0; row < piece.length; row++) {
-    for (let col = 0; col < piece[row].length; col++) {
-      if (piece[row][col] != 0) {
-        let pieceColorIndex = piece[row][col]
-        let startColor = getColorByIndex(pieceColorIndex)
-        let endColor = getColorByIndex(pieceColorIndex + 1)
-        let pixelCol = col + player.position.x
-        let pixelRow = row + player.position.y
-        
-        drawPixel(pixelCol, pixelRow, startColor, endColor)
+const drawPixelData = () => {
+  for(i = 0; i < pixelData.length; i++){
+    let pixelRow = pixelData[i].y
+    let pixelCol = pixelData[i].x
+    arena[pixelRow][pixelCol] = pixelData[i].color
+  }
+}
+
+const drawPiece = (piece) => {
+  let absolutePosition = translatePiecePosition(piece)
+
+  for(let i = 0; i < absolutePosition.length; i++){
+    let pixelRow = absolutePosition[i].y
+    let pixelCol = absolutePosition[i].x
+    arena[pixelRow][pixelCol] = absolutePosition[i].color
+  }
+}
+
+
+// ARENA
+const clearArena = () => {
+  for (let row = 0; row < arena.length; row++) {
+    for (let col = 0; col < arena[row].length; col++) {
+      arena[row][col] = 0
+    }
+  }
+}
+
+const drawArena = () => {
+  for (let row = 0; row < arena.length; row++) {
+    for (let col = 0; col < arena[row].length; col++) {
+      
+      if(arena[row][col] != 0){
+        let startColor = getColorByIndex(arena[row][col])
+        let endColor = getColorByIndex(arena[row][col] + 1)
+        drawPixel(col, row, startColor, endColor)
       }
     }
   }
 }
 
-//ROTATING
-const rotateR = () => {
-  let currentTetromino = player.piece.tetromino
-  let currentRotation = player.piece.rotation
-  let maxRotation = Object.values(currentTetromino).length - 1
-  let safeRotateAmount = currentRotation < maxRotation ? 1 : -currentRotation
-  return player.piece.rotation += safeRotateAmount
+const printArena = () => {
+  console.log('\n\n')
+  for (let row = 0; row < arena.length; row++) {
+    console.log(arena[row].toString(), "-", row)
+  }
 }
 
-const rotateL = () => {
-  let currentTetromino = player.piece.tetromino
-  let currentRotation = player.piece.rotation
-  let maxRotation = Object.values(currentTetromino).length - 1
+//COLISION
+const checkBoundaryColision = (pixelNextCol, pixelNextRow) => {
+  let yColision = pixelNextRow < 0 || pixelNextRow > arena.length - 1
+  let xColision = pixelNextCol < 0 || pixelNextCol > arena[0].length - 1
+  return yColision || xColision
+}
+
+const checkPixelDataColision = (pixelNextCol, pixelNextRow) => {
+  containsPixelData = pixelData.filter(pixel => pixel.x === pixelNextCol && pixel.y === pixelNextRow)
+  return containsPixelData.length > 0
+}
+
+const checkColision = (pixelNextCol, pixelNextRow) => {
+  let boundaryColision = checkBoundaryColision(pixelNextCol, pixelNextRow)
+  let pixelColision = checkPixelDataColision(pixelNextCol, pixelNextRow)
+  return boundaryColision || pixelColision
+}
+
+const willPieceColide = (piece, xAmount = 0, yAmount = 0, rotateAmount = 0) => {
+  let pieceCoordinates = translatePiecePosition({
+    ...piece,
+    rotation: piece.rotation + rotateAmount
+  })
+  let coliding = false
+  for(let i = 0; i < pieceCoordinates.length; i++){
+    let nextXCoordinates = pieceCoordinates[i].x + xAmount
+    let nextYCoordinates = pieceCoordinates[i].y + yAmount
+    coliding = checkColision(nextXCoordinates, nextYCoordinates)
+    if(coliding) return coliding
+  }
+  return coliding
+}
+
+const tryForceRotation = (piece, rotateAmount) => {
+  if(!willPieceColide(piece, 0, 0, rotateAmount)){
+    piece.rotation += rotateAmount
+  }
+  else if(!willPieceColide(piece, 0, 1, rotateAmount)){
+    piece.position.y += 1
+    piece.rotation += rotateAmount
+  }
+  else if(!willPieceColide(piece, 1, 0, rotateAmount)){
+    piece.position.x += 1
+    piece.rotation += rotateAmount
+  }
+  else if(!willPieceColide(piece, 0, -1, rotateAmount)){
+    piece.position.y -= 1
+    piece.rotation += rotateAmount
+  }
+  else if(!willPieceColide(piece, -1, 0, rotateAmount)){
+    piece.position.x -= 1
+    piece.rotation += rotateAmount
+  }
+}
+
+//ROTATING
+const rotateR = piece => {
+  let {tetromino, rotation} = piece
+  let maxRotation = Object.values(tetromino).length - 1
+  let safeRotateAmount = rotation < maxRotation ? 1 : -rotation
+  tryForceRotation(piece, safeRotateAmount)
+}
+
+const rotateL = piece => {
+  let {tetromino, rotation} = piece
+  let maxRotation = Object.values(tetromino).length - 1
   let minRotation = 0
-  let safeRotateAmount = currentRotation > minRotation ? -1 : maxRotation
-  return player.piece.rotation += safeRotateAmount
+  let safeRotateAmount = rotation > minRotation ? -1 : maxRotation
+  tryForceRotation(piece, safeRotateAmount)
 }
 
 // MOVING
+const movePiece = (piece, xAmount, yAmount) => {
+  let willColide = willPieceColide(piece, xAmount, yAmount)
+  piece.position.x += willColide? 0 : xAmount
+  piece.position.y += willColide? 0 : yAmount
+}
+
 const validateEventKey = (event, key) => {
   const { keyCode, which } = event
   return keyCode === key || which === key
@@ -272,7 +415,6 @@ const getDirectionPressed = (event) => {
 const keyPressed = event => {
   let direction = getDirectionPressed(event)
 
-  console.log(direction)
   switch(direction){
     case 'left': player.move.left()
     break;
@@ -292,14 +434,26 @@ document.addEventListener('keydown', event => {
 })
 
 // UPDATING
+const clear = () => {
+  context.clearRect(0,0,CANVASWIDTH, CANVASHEIGHT)
+  clearArena()
+}
+
+const draw = () => {
+  drawPixelData()
+  drawPiece(player.piece)
+  drawArena()
+  printArena()
+}
+
 let lastime = 0
 const update = (time = 0) => {
   const deltaTime = time - lastime
   lastime = time
   // dropCounter += deltaTime
-  context.clearRect(0,0,CANVASWIDTH, CANVASHEIGHT)
+  clear()
   //drawPiece(tetromino.I[0])
-  drawPiece(player.piece.tetromino[player.piece.rotation])
+  draw()
   requestAnimationFrame(update)
 }
 
