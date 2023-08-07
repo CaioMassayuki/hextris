@@ -363,16 +363,18 @@ const willPieceCollide = (piece, desiredXAmount = 0, desiredYAmount = 0, rotateA
   return Colliding
 }
 
-const tryForceRotationNearby = (piece, rotateAmount) => {
+const tryForceRotationNearby = (piece, rotateAmount, direction = 'L') => {
+  let translatedDirection = direction === 'L' ? 1 : -1
+  
   if(!willPieceCollide(piece, 0, 0, rotateAmount)){
     piece.rotation += rotateAmount
   }
-  else if(!willPieceCollide(piece, 1, 0, rotateAmount)){
-    piece.position.x += 1
+  else if(!willPieceCollide(piece, translatedDirection, 0, rotateAmount)){
+    piece.position.x += translatedDirection
     piece.rotation += rotateAmount
   }
-  else if(!willPieceCollide(piece, -1, 0, rotateAmount)){
-    piece.position.x -= 1
+  else if(!willPieceCollide(piece, -translatedDirection, 0, rotateAmount)){
+    piece.position.x -= translatedDirection
     piece.rotation += rotateAmount
   }
   else if(!willPieceCollide(piece, 0, -1, rotateAmount)){
@@ -390,7 +392,7 @@ const rotateR = piece => {
   let {tetromino, rotation} = piece
   let maxRotation = Object.values(tetromino).length - 1
   let safeRotateAmount = rotation < maxRotation ? 1 : -rotation
-  tryForceRotationNearby(piece, safeRotateAmount)
+  tryForceRotationNearby(piece, safeRotateAmount, 'R')
 }
 
 const rotateL = piece => {
@@ -398,7 +400,7 @@ const rotateL = piece => {
   let maxRotation = Object.values(tetromino).length - 1
   let minRotation = 0
   let safeRotateAmount = rotation > minRotation ? -1 : maxRotation
-  tryForceRotationNearby(piece, safeRotateAmount)
+  tryForceRotationNearby(piece, safeRotateAmount, 'L')
 }
 
 // MOVING
@@ -461,7 +463,7 @@ const draw = () => {
   insertPixelDataIntoArena()
   insertPieceIntoArena(player.piece)
   drawArenaData()
-  printArenaData()
+  //printArenaData()
 }
 
 let lastime = 0
