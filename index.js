@@ -1,10 +1,33 @@
 let canvas = document.getElementById('canvas')
 let context = canvas.getContext('2d')
 
+let arena = [
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,]
+]
+
 // CONSTANTS
 const CANVASHEIGHT = canvas.height
 const CANVASWIDTH = canvas.width
-const PIXEL = CANVASWIDTH / 10
+const PIXEL = CANVASWIDTH / arena[0].length
 const LEFT_ARROW = 37
 const RIGHT_ARROW = 39
 const DOWN_ARROW = 40
@@ -183,41 +206,32 @@ const tetromino = {
   Z: Z_STATES
 }
 
-let arena = [
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,]
+const createPiece = (posX, posY, tetromino, rotation = 0) => {
+  return ({
+    position: { x: posX, y: posY },
+    tetromino: tetromino,
+    rotation: rotation})
+}
+
+const createPixelData = (posX, posY, colorIndex) => {
+  return ({
+    x: posX, y: posY, color: colorIndex
+  })
+}
+
+//É pra isso aqui ser um array vazio que vai se 
+//enchendo de dado dos pixel que não são do player
+//e nem tem cor 0
+//Importante pra colisão
+let pixelData = [
+  createPixelData(5,8,1),
+  createPixelData(5,9,1),
+  createPixelData(5,10,1),
+  createPixelData(5,11,1)
 ]
 
-let pixelData = [
-  {x: 5, y: 8, color: 1},
-  {x: 5, y: 9, color: 1},
-  {x: 5, y: 10, color: 1},
-  {x: 5, y: 11, color: 1}]
-
 const player = {
-  piece: {
-    position: { x: 4, y: 0 },
-    tetromino: tetromino.T,
-    rotation: 0
-  },
+  piece: createPiece(4, 0, tetromino.T, 0),
   move: {
     left: () => movePiece(player.piece, -1, 0),
     right: () => movePiece(player.piece, 1, 0),
@@ -240,11 +254,13 @@ const translatePiecePosition = piece => {
   for(let row = 0; row < tetromino.length; row++) {
     for (let col = 0; col < tetromino[row].length; col++) {
       if(tetromino[row][col] != 0) {
-        pixelCoordinates.push({
-          x: pieceX+col,
-          y: pieceY+row,
-          color: tetromino[row][col]
-        })
+        pixelCoordinates.push(
+          createPixelData(
+            pieceX + col,
+            pieceY + row,
+            tetromino[row][col]
+          )
+        )
       }
     }
   }
@@ -264,7 +280,7 @@ const drawPixel = (colNumber, rowNumber, startColor, endColor = startColor) => {
   context.fillRect(colNumber * PIXEL, rowNumber * PIXEL, PIXEL, PIXEL)
 }
 
-const drawPixelData = () => {
+const insertPixelDataIntoArena = () => {
   for(i = 0; i < pixelData.length; i++){
     let pixelRow = pixelData[i].y
     let pixelCol = pixelData[i].x
@@ -272,7 +288,7 @@ const drawPixelData = () => {
   }
 }
 
-const drawPiece = (piece) => {
+const insertPieceIntoArena = (piece) => {
   let absolutePosition = translatePiecePosition(piece)
 
   for(let i = 0; i < absolutePosition.length; i++){
@@ -282,9 +298,7 @@ const drawPiece = (piece) => {
   }
 }
 
-
-// ARENA
-const clearArena = () => {
+const clearArenaData = () => {
   for (let row = 0; row < arena.length; row++) {
     for (let col = 0; col < arena[row].length; col++) {
       arena[row][col] = 0
@@ -292,7 +306,7 @@ const clearArena = () => {
   }
 }
 
-const drawArena = () => {
+const drawArenaData = () => {
   for (let row = 0; row < arena.length; row++) {
     for (let col = 0; col < arena[row].length; col++) {
       
@@ -305,64 +319,68 @@ const drawArena = () => {
   }
 }
 
-const printArena = () => {
-  console.log('\n\n')
+const printArenaData = () => {
+  let arenaData = '\n\n\n\n\n\n'
   for (let row = 0; row < arena.length; row++) {
-    console.log(arena[row].toString(), "-", row)
+    arenaData += (arena[row].toString()+'\n')
   }
+  console.group()
+  console.log(arenaData, '\n\n\n\n\n\n\n')
+  console.groupEnd()
 }
 
-//COLISION
-const checkBoundaryColision = (pixelNextCol, pixelNextRow) => {
-  let yColision = pixelNextRow < 0 || pixelNextRow > arena.length - 1
-  let xColision = pixelNextCol < 0 || pixelNextCol > arena[0].length - 1
-  return yColision || xColision
+//COLLISION
+const checkArenaBoundaryCollision = (pixelNextCol, pixelNextRow) => {
+  let yCollision = pixelNextRow < 0 || pixelNextRow > arena.length - 1
+  let xCollision = pixelNextCol < 0 || pixelNextCol > arena[0].length - 1
+  return yCollision || xCollision
 }
 
-const checkPixelDataColision = (pixelNextCol, pixelNextRow) => {
+const checkPixelDataCollision = (pixelNextCol, pixelNextRow) => {
   containsPixelData = pixelData.filter(pixel => pixel.x === pixelNextCol && pixel.y === pixelNextRow)
   return containsPixelData.length > 0
 }
 
-const checkColision = (pixelNextCol, pixelNextRow) => {
-  let boundaryColision = checkBoundaryColision(pixelNextCol, pixelNextRow)
-  let pixelColision = checkPixelDataColision(pixelNextCol, pixelNextRow)
-  return boundaryColision || pixelColision
+const hasCollisions = (pixelNextCol, pixelNextRow) => {
+  let boundaryCollision = checkArenaBoundaryCollision(pixelNextCol, pixelNextRow)
+  let pixelCollision = checkPixelDataCollision(pixelNextCol, pixelNextRow)
+  return boundaryCollision || pixelCollision
 }
 
-const willPieceColide = (piece, xAmount = 0, yAmount = 0, rotateAmount = 0) => {
+const willPieceCollide = (piece, desiredXAmount = 0, desiredYAmount = 0, rotateAmount = 0) => {
+  let Colliding = false
   let pieceCoordinates = translatePiecePosition({
     ...piece,
     rotation: piece.rotation + rotateAmount
   })
-  let coliding = false
+  
   for(let i = 0; i < pieceCoordinates.length; i++){
-    let nextXCoordinates = pieceCoordinates[i].x + xAmount
-    let nextYCoordinates = pieceCoordinates[i].y + yAmount
-    coliding = checkColision(nextXCoordinates, nextYCoordinates)
-    if(coliding) return coliding
+    let nextXCoordinates = pieceCoordinates[i].x + desiredXAmount
+    let nextYCoordinates = pieceCoordinates[i].y + desiredYAmount
+    Colliding = hasCollisions(nextXCoordinates, nextYCoordinates)
+    if(Colliding) return Colliding
   }
-  return coliding
+  return Colliding
 }
 
-const tryForceRotation = (piece, rotateAmount) => {
-  if(!willPieceColide(piece, 0, 0, rotateAmount)){
+const tryForceRotationNearby = (piece, rotateAmount) => {
+  if(!willPieceCollide(piece, 0, 0, rotateAmount)){
     piece.rotation += rotateAmount
   }
-  else if(!willPieceColide(piece, 0, 1, rotateAmount)){
-    piece.position.y += 1
-    piece.rotation += rotateAmount
-  }
-  else if(!willPieceColide(piece, 1, 0, rotateAmount)){
+  else if(!willPieceCollide(piece, 1, 0, rotateAmount)){
     piece.position.x += 1
     piece.rotation += rotateAmount
   }
-  else if(!willPieceColide(piece, 0, -1, rotateAmount)){
+  else if(!willPieceCollide(piece, -1, 0, rotateAmount)){
+    piece.position.x -= 1
+    piece.rotation += rotateAmount
+  }
+  else if(!willPieceCollide(piece, 0, -1, rotateAmount)){
     piece.position.y -= 1
     piece.rotation += rotateAmount
   }
-  else if(!willPieceColide(piece, -1, 0, rotateAmount)){
-    piece.position.x -= 1
+  else if(!willPieceCollide(piece, 0, 1, rotateAmount)){
+    piece.position.y += 1
     piece.rotation += rotateAmount
   }
 }
@@ -372,7 +390,7 @@ const rotateR = piece => {
   let {tetromino, rotation} = piece
   let maxRotation = Object.values(tetromino).length - 1
   let safeRotateAmount = rotation < maxRotation ? 1 : -rotation
-  tryForceRotation(piece, safeRotateAmount)
+  tryForceRotationNearby(piece, safeRotateAmount)
 }
 
 const rotateL = piece => {
@@ -380,14 +398,14 @@ const rotateL = piece => {
   let maxRotation = Object.values(tetromino).length - 1
   let minRotation = 0
   let safeRotateAmount = rotation > minRotation ? -1 : maxRotation
-  tryForceRotation(piece, safeRotateAmount)
+  tryForceRotationNearby(piece, safeRotateAmount)
 }
 
 // MOVING
-const movePiece = (piece, xAmount, yAmount) => {
-  let willColide = willPieceColide(piece, xAmount, yAmount)
-  piece.position.x += willColide? 0 : xAmount
-  piece.position.y += willColide? 0 : yAmount
+const movePiece = (piece, desiredXAmount, desiredYAmount) => {
+  let willCollide = willPieceCollide(piece, desiredXAmount, desiredYAmount)
+  piece.position.x += willCollide? 0 : desiredXAmount
+  piece.position.y += willCollide? 0 : desiredYAmount
 }
 
 const validateEventKey = (event, key) => {
@@ -436,14 +454,14 @@ document.addEventListener('keydown', event => {
 // UPDATING
 const clear = () => {
   context.clearRect(0,0,CANVASWIDTH, CANVASHEIGHT)
-  clearArena()
+  clearArenaData()
 }
 
 const draw = () => {
-  drawPixelData()
-  drawPiece(player.piece)
-  drawArena()
-  printArena()
+  insertPixelDataIntoArena()
+  insertPieceIntoArena(player.piece)
+  drawArenaData()
+  printArenaData()
 }
 
 let lastime = 0
