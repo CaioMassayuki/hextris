@@ -337,7 +337,7 @@ const checkArenaBoundaryCollision = (pixelNextCol, pixelNextRow) => {
 }
 
 const checkPixelDataCollision = (pixelNextCol, pixelNextRow) => {
-  containsPixelData = pixelData.filter(pixel => pixel.x === pixelNextCol && pixel.y === pixelNextRow)
+  containsPixelData = pixelData.filter(pixel => pixel.x === pixelNextCol && pixel.y === pixelNextRow && pixel.color != 0)
   return containsPixelData.length > 0
 }
 
