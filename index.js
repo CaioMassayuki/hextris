@@ -37,162 +37,183 @@ const X_KEY = 88
 const COLORS = {
   0: 'black',
   1: 'cyan',
-  2: 'purple',
-  3: 'orange',
-  4: 'blue',
-  5: 'yellow',
-  6: 'green',
-  7: 'red',
+  2: 'blue',
+  3: 'purple',
+  4: 'red',
+  5: 'orange',
+  6: 'yellow',
+  7: 'green',
   8: 'cyan',
 }
 
 // PIECES
 const I_STATES = {
   0: [
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
-    [0, 0, 1, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
   ],
   1: [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [1, 1, 1, 1],
-    [0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
   ],
   2: [
-    [0, 1, 0, 0],
-    [0, 1, 0, 0],
-    [0, 1, 0, 0],
-    [0, 1, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [1, 1, 1, 1, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
   ],
   3: [
-    [0, 0, 0, 0],
-    [1, 1, 1, 1],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0],
+    [0, 0, 0, 0, 0]
   ]
 }
 
 const T_STATES = {
   0: [
-    [0, 2, 0],
-    [2, 2, 2],
+    [0, 3, 0],
+    [3, 3, 3],
     [0, 0, 0],
   ],
   1: [
-    [0, 2, 0],
-    [0, 2, 2],
-    [0, 2, 0],
+    [0, 3, 0],
+    [0, 3, 3],
+    [0, 3, 0],
   ],
   2: [
     [0, 0, 0],
-    [2, 2, 2],
-    [0, 2, 0],
+    [3, 3, 3],
+    [0, 3, 0],
   ],
   3: [
-    [0, 2, 0],
-    [2, 2, 0],
-    [0, 2, 0],
+    [0, 3, 0],
+    [3, 3, 0],
+    [0, 3, 0],
   ]
 }
 
 const L_STATES = {
   0: [
-    [0, 3, 0],
-    [0, 3, 0],
-    [0, 3, 3],
+    [0, 0, 5],
+    [5, 5, 5],
+    [0, 0, 0],
   ],
   1: [
-    [0, 0, 0],
-    [3, 3, 3],
-    [3, 0, 0],
+    [0, 5, 0],
+    [0, 5, 0],
+    [0, 5, 5],
   ],
   2: [
-    [3, 3, 0],
-    [0, 3, 0],
-    [0, 3, 0],
+    [0, 0, 0],
+    [5, 5, 5],
+    [5, 0, 0],
   ],
   3: [
-    [0, 0, 3],
-    [3, 3, 3],
-    [0, 0, 0],
+    [5, 5, 0],
+    [0, 5, 0],
+    [0, 5, 0],
   ]
 }
 
 const J_STATES = {
   0: [
-    [0, 4, 0],
-    [0, 4, 0],
-    [4, 4, 0],
+    [2, 0, 0],
+    [2, 2, 2],
+    [0, 0, 0],
   ],
   1: [
-    [4, 0, 0],
-    [4, 4, 4],
-    [0, 0, 0],
+    [0, 2, 2],
+    [0, 2, 0],
+    [0, 2, 0],
   ],
   2: [
-    [0, 4, 4],
-    [0, 4, 0],
-    [0, 4, 0],
+    [0, 0, 0],
+    [2, 2, 2],
+    [0, 0, 2],
   ],
   3: [
-    [0, 0, 0],
-    [4, 4, 4],
-    [0, 0, 4],
+    [0, 2, 0],
+    [0, 2, 0],
+    [2, 2, 0],
   ],
 }
 
 const O_STATES = {
   0: [
-    [5, 5],
-    [5, 5],
+    [0, 6, 6],
+    [0, 6, 6],
+    [0, 0, 0]
+  ],
+  1: [
+
+    [0, 0, 0],
+    [0, 6, 6],
+    [0, 6, 6]
+  ],
+  2: [
+    [0, 0, 0],
+    [6, 6, 0],
+    [6, 6, 0],
+  ],
+  3: [
+    [6, 6, 0],
+    [6, 6, 0],
+    [0, 0, 0]
   ]
 }
 
 const S_STATES = {
   0: [
-    [0, 6, 6],
-    [6, 6, 0],
+    [0, 7, 7],
+    [7, 7, 0],
     [0, 0, 0]
   ],
   1: [
-    [0, 6, 0],
-    [0, 6, 6],
-    [0, 0, 6]
+    [0, 7, 0],
+    [0, 7, 7],
+    [0, 0, 7]
   ],
   2: [
     [0, 0, 0],
-    [0, 6, 6],
-    [6, 6, 0]
+    [0, 7, 7],
+    [7, 7, 0]
   ],
   3: [
-    [6, 0, 0],
-    [6, 6, 0],
-    [0, 6, 0]
+    [7, 0, 0],
+    [7, 7, 0],
+    [0, 7, 0]
   ],
 }
 
 const Z_STATES = {
   0: [
-    [7, 7, 0],
-    [0, 7, 7],
+    [4, 4, 0],
+    [0, 4, 4],
     [0, 0, 0]
   ],
   1: [
-    [0, 0, 7],
-    [0, 7, 7],
-    [0, 7, 0]
+    [0, 0, 4],
+    [0, 4, 4],
+    [0, 4, 0]
   ],
   2: [
     [0, 0, 0],
-    [7, 7, 0],
-    [0, 7, 7]
+    [4, 4, 0],
+    [0, 4, 4]
   ],
   3: [
-    [0, 7, 0],
-    [7, 7, 0],
-    [7, 0, 0]
+    [0, 4, 0],
+    [4, 4, 0],
+    [4, 0, 0]
   ],
 }
 
@@ -206,11 +227,46 @@ const tetromino = {
   Z: Z_STATES
 }
 
-const createPiece = (posX, posY, tetromino, rotation = 0) => {
+const JLSTZ_KICK_OFFSET_DATA = {
+  0: [{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: 0}],
+  1: [{x: 0, y: 0},{x: 1, y: 0},{x: 1, y: 1},{x: 0, y: -2},{x: 1, y: -2}],
+  2: [{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: 0}],
+  3: [{x: 0, y: 0},{x: -1, y: 0},{x: -1, y: 1},{x: 0, y: -2},{x: -1, y: -2}]
+}
+
+const I_KICK_OFFSET_DATA = {
+  0: [{x: 0, y: 0},{x: -1, y: 0},{x: 2, y: 0},{x: -1, y: 0},{x: 2, y: 0}],
+  1: [{x: -1, y: 0},{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: -1},{x: 0, y: 2}],
+  2: [{x: -1, y: -1},{x: 1, y: -1},{x: -2, y: -1},{x: 1, y: 0},{x: -2, y: 0}],
+  3: [{x: 0, y: -1},{x: 0, y: -1},{x: 0, y: -1},{x: 0, y: 1},{x: 0, y: -2}]
+}
+
+const O_KICK_OFFSET_DATA = {
+  0: [{x: 0, y: 0}],
+  1: [{x: 0, y: 1}],
+  2: [{x: -1, y: 1}],
+  3: [{x: -1, y: 0}]
+}
+
+const createPiece = (posX, posY, tetromino, rotation = 0, kickOffsetData = JLSTZ_KICK_OFFSET_DATA) => {
   return ({
     position: { x: posX, y: posY },
     tetromino: tetromino,
-    rotation: rotation})
+    rotation: rotation,
+    kickOffset: kickOffsetData
+  })
+}
+
+const createStartingPiece = tetrominoLetter => {
+  let piece;
+  switch(tetrominoLetter){
+    case 'I': piece = createPiece(2, -2, tetromino.I, 0, I_KICK_OFFSET_DATA)
+    break;
+    case 'O': piece = createPiece(5, 0, tetromino.O, 0, O_KICK_OFFSET_DATA)
+    break;
+    default: piece = createPiece(4, 0, tetromino[tetrominoLetter], 0, JLSTZ_KICK_OFFSET_DATA)
+  }
+  return piece
 }
 
 const createPixelData = (posX, posY, colorIndex) => {
@@ -223,16 +279,10 @@ const createPixelData = (posX, posY, colorIndex) => {
 //enchendo de dado dos pixel que não são do player
 //e nem tem cor 0
 //Importante pra colisão
-let pixelData = [
-  createPixelData(6,8,1),
-  createPixelData(5,8,1),
-  createPixelData(5,9,1),
-  createPixelData(5,10,1),
-  createPixelData(5,11,1)
-]
+let pixelData = []
 
 const player = {
-  piece: createPiece(4, 0, tetromino.T, 0),
+  piece: createStartingPiece('Z'),
   move: {
     left: () => movePiece(player.piece, -1, 0),
     right: () => movePiece(player.piece, 1, 0),
@@ -285,7 +335,9 @@ const insertPixelDataIntoArena = () => {
   for(i = 0; i < pixelData.length; i++){
     let pixelRow = pixelData[i].y
     let pixelCol = pixelData[i].x
-    arena[pixelRow][pixelCol] = pixelData[i].color
+    if(pixelRow < arena.length && pixelCol < arena[pixelRow].length){
+      arena[pixelRow][pixelCol] = pixelData[i].color
+    }
   }
 }
 
@@ -295,7 +347,9 @@ const insertPieceIntoArena = (piece) => {
   for(let i = 0; i < absolutePosition.length; i++){
     let pixelRow = absolutePosition[i].y
     let pixelCol = absolutePosition[i].x
-    arena[pixelRow][pixelCol] = absolutePosition[i].color
+    if(pixelRow < arena.length && pixelCol < arena[pixelRow].length){
+      arena[pixelRow][pixelCol] = absolutePosition[i].color
+    }
   }
 }
 
@@ -364,28 +418,28 @@ const willPieceCollide = (piece, desiredXAmount = 0, desiredYAmount = 0, rotateA
   return Colliding
 }
 
-const tryForceRotationNearby = (piece, rotateAmount, direction = 'L') => {
-  let translatedDirection = direction === 'L' ? 1 : -1
+const tryForceRotationKick = (piece, rotateAmount) => {
+  let currentRotation = piece.rotation
+  let targetRotation = piece.rotation + rotateAmount
 
-  if(!willPieceCollide(piece, 0, 0, rotateAmount)){
-    piece.rotation += rotateAmount
-  }
-  else if(!willPieceCollide(piece, translatedDirection, 0, rotateAmount)){
-    piece.position.x += translatedDirection
-    piece.rotation += rotateAmount
-  }
-  else if(!willPieceCollide(piece, 0, -1, rotateAmount)){
-    piece.position.y -= 1
-    piece.rotation += rotateAmount
-  }
-  else if(!willPieceCollide(piece, -translatedDirection, 0, rotateAmount)){
-    piece.position.x -= translatedDirection
-    piece.rotation += rotateAmount
-  }
-  else if(!willPieceCollide(piece, 0, 1, rotateAmount)){
-    piece.position.y += 1
-    piece.rotation += rotateAmount
-  }
+  let targetOffsetData = piece.kickOffset[targetRotation]
+  let currentOffsetData = piece.kickOffset[currentRotation]
+
+  for(let i = 0; i < targetOffsetData.length; i++){
+    let XCheck = currentOffsetData[i].x - targetOffsetData[i].x
+    let YCheck = currentOffsetData[i].y - targetOffsetData[i].y
+
+    if(!willPieceCollide(
+      piece,
+      XCheck,
+      YCheck,
+      rotateAmount)){
+        piece.position.x += XCheck
+        piece.position.y += YCheck
+        piece.rotation += rotateAmount
+        return
+      }
+    }
 }
 
 //ROTATING
@@ -393,7 +447,7 @@ const rotateR = piece => {
   let {tetromino, rotation} = piece
   let maxRotation = Object.values(tetromino).length - 1
   let safeRotateAmount = rotation < maxRotation ? 1 : -rotation
-  tryForceRotationNearby(piece, safeRotateAmount, 'R')
+  tryForceRotationKick(piece, safeRotateAmount)
 }
 
 const rotateL = piece => {
@@ -401,7 +455,7 @@ const rotateL = piece => {
   let maxRotation = Object.values(tetromino).length - 1
   let minRotation = 0
   let safeRotateAmount = rotation > minRotation ? -1 : maxRotation
-  tryForceRotationNearby(piece, safeRotateAmount, 'L')
+  tryForceRotationKick(piece, safeRotateAmount)
 }
 
 // MOVING
@@ -479,3 +533,213 @@ const update = (time = 0) => {
 }
 
 update()
+
+
+// ARENA PRESETS
+
+const createElevator = () => {
+  player.piece = createStartingPiece('T')
+  pixelData = [
+    createPixelData(0,1,1),
+    createPixelData(0,2,1),
+    createPixelData(0,3,1),
+    createPixelData(0,4,1),
+    createPixelData(0,5,1),
+    createPixelData(0,6,1),
+    createPixelData(0,7,1),
+    createPixelData(0,8,1),
+    createPixelData(0,9,1),
+    createPixelData(0,10,1),
+    createPixelData(0,11,1),
+    createPixelData(0,12,1),
+    createPixelData(0,13,1),
+    createPixelData(0,14,1),
+    createPixelData(0,15,1),
+    createPixelData(0,16,1),
+    createPixelData(0,17,1),
+    createPixelData(0,18,1),
+    createPixelData(0,19,1),
+  
+    createPixelData(1,5,1),
+    createPixelData(1,6,1),
+    createPixelData(1,7,1),
+    createPixelData(1,8,1),
+    createPixelData(1,9,1),
+    createPixelData(1,10,1),
+    createPixelData(1,11,1),
+    createPixelData(1,12,1),
+    createPixelData(1,13,1),
+    createPixelData(1,14,1),
+    createPixelData(1,15,1),
+    createPixelData(1,16,1),
+    createPixelData(1,17,1),
+    createPixelData(1,18,1),
+    createPixelData(1,19,1),
+  
+    createPixelData(2,9,1),
+    createPixelData(2,10,1),
+    createPixelData(2,11,1),
+    createPixelData(2,12,1),
+    createPixelData(2,13,1),
+    createPixelData(2,14,1),
+    createPixelData(2,15,1),
+    createPixelData(2,16,1),
+    createPixelData(2,17,1),
+    createPixelData(2,18,1),
+    createPixelData(2,19,1),
+  
+    createPixelData(3,13,1),
+    createPixelData(3,14,1),
+    createPixelData(3,15,1),
+    createPixelData(3,16,1),
+    createPixelData(3,17,1),
+    createPixelData(3,18,1),
+    createPixelData(3,19,1),
+  
+    createPixelData(4,17,1),
+    createPixelData(4,18,1),
+    createPixelData(4,19,1),
+  
+    createPixelData(2,3,1),
+    createPixelData(3,7,1),
+    createPixelData(4,11,1),
+    createPixelData(5,15,1),
+  
+    createPixelData(6,19,1),
+    createPixelData(7,19,1),
+    createPixelData(8,19,1),
+    createPixelData(9,19,1),
+  
+  
+    createPixelData(4,2,1),
+    createPixelData(4,3,1),
+    createPixelData(4,4,1),
+  
+    createPixelData(5,2,1),
+    createPixelData(5,3,1),
+    createPixelData(5,4,1),
+    createPixelData(5,5,1),
+    createPixelData(5,6,1),
+    createPixelData(5,7,1),
+    createPixelData(5,8,1),
+  
+    createPixelData(6,2,1),
+    createPixelData(6,3,1),
+    createPixelData(6,4,1),
+    createPixelData(6,5,1),
+    createPixelData(6,6,1),
+    createPixelData(6,7,1),
+    createPixelData(6,8,1),
+    createPixelData(6,9,1),
+    createPixelData(6,10,1),
+    createPixelData(6,11,1),
+    createPixelData(6,12,1),
+  
+    createPixelData(7,2,1),
+    createPixelData(7,3,1),
+    createPixelData(7,4,1),
+    createPixelData(7,5,1),
+    createPixelData(7,6,1),
+    createPixelData(7,7,1),
+    createPixelData(7,8,1),
+    createPixelData(7,9,1),
+    createPixelData(7,10,1),
+    createPixelData(7,11,1),
+    createPixelData(7,12,1),
+    createPixelData(7,13,1),
+    createPixelData(7,14,1),
+    createPixelData(7,15,1),
+    createPixelData(7,16,1),]
+}
+
+const createStairs = () => {
+  player.piece = createStartingPiece('I')
+  pixelData = [
+    createPixelData(0,11,5),
+    createPixelData(1,11,5),
+    createPixelData(2,11,5),
+    createPixelData(3,11,5),
+    createPixelData(4,11,5),
+    createPixelData(5,11,5),
+    createPixelData(6,11,5),
+    createPixelData(7,11,5),
+    createPixelData(9,11,5),
+
+    createPixelData(0,12,5),
+    createPixelData(1,12,5),
+    createPixelData(2,12,5),
+    createPixelData(3,12,5),
+    createPixelData(4,12,5),
+    createPixelData(5,12,5),
+    createPixelData(6,12,5),
+    createPixelData(7,12,5),
+    createPixelData(9,12,5),
+
+    createPixelData(0,13,5),
+    createPixelData(1,13,5),
+    createPixelData(2,13,5),
+    createPixelData(3,13,5),
+    createPixelData(4,13,5),
+    createPixelData(5,13,5),
+    createPixelData(6,13,5),
+    createPixelData(7,13,5),
+    createPixelData(9,13,5),
+
+    createPixelData(0,14,5),
+    createPixelData(1,14,5),
+    createPixelData(2,14,5),
+    createPixelData(3,14,5),
+    createPixelData(4,14,5),
+    createPixelData(5,14,5),
+    createPixelData(6,14,5),
+    createPixelData(7,14,5),
+    createPixelData(9,14,5),
+
+    createPixelData(0,15,5),
+    createPixelData(1,15,5),
+    createPixelData(2,15,5),
+    createPixelData(3,15,5),
+    createPixelData(9,15,5),
+
+    createPixelData(0,16,5),
+    createPixelData(1,16,5),
+    createPixelData(2,16,5),
+    createPixelData(3,16,5),
+    createPixelData(5,16,5),
+    createPixelData(6,16,5),
+    createPixelData(7,16,5),
+    createPixelData(8,16,5),
+    createPixelData(9,16,5),
+
+    createPixelData(0,17,5),
+    createPixelData(1,17,5),
+    createPixelData(2,17,5),
+    createPixelData(3,17,5),
+    createPixelData(5,17,5),
+    createPixelData(6,17,5),
+    createPixelData(7,17,5),
+    createPixelData(8,17,5),
+    createPixelData(9,17,5),
+
+    createPixelData(0,18,5),
+    createPixelData(1,18,5),
+    createPixelData(2,18,5),
+    createPixelData(3,18,5),
+    createPixelData(5,18,5),
+    createPixelData(6,18,5),
+    createPixelData(7,18,5),
+    createPixelData(8,18,5),
+    createPixelData(9,18,5),
+
+    createPixelData(0,19,5),
+    createPixelData(5,19,5),
+    createPixelData(6,19,5),
+    createPixelData(7,19,5),
+    createPixelData(8,19,5),
+    createPixelData(9,19,5),
+    
+  ]
+}
+
+//createElevator()
+//createStairs()
