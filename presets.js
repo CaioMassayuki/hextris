@@ -1,7 +1,7 @@
 // ARENA PRESETS
 
 const elevatorArenaPreset = (player, pixelData) => {
-    player.piece = createStartingPiece('T')
+    player.piece = createPlayerPiece('T')
     pixelData.length = 0
     pixelData.push(
       createPixelData(0,1,1),
@@ -118,7 +118,7 @@ const elevatorArenaPreset = (player, pixelData) => {
   }
   
   const stairsArenaPreset = (player, pixelData) => {
-    player.piece = createStartingPiece('I')
+    player.piece = createPlayerPiece('I')
     pixelData.length = 0
     pixelData.push(
       createPixelData(0,11,5),

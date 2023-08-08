@@ -28,6 +28,9 @@ const COLORS = {
 }
 
 // PIECES
+
+// Array representation of every possible tetramino
+// in every possible rotation
 const I_STATES = {
   0: [
     [0, 0, 0, 0, 0],
@@ -135,7 +138,6 @@ const O_STATES = {
     [0, 0, 0]
   ],
   1: [
-
     [0, 0, 0],
     [0, 6, 6],
     [0, 6, 6]
@@ -208,6 +210,8 @@ const tetromino = {
   Z: Z_STATES
 }
 
+// https://tetris.wiki/Super_Rotation_System
+// O eixo y fica invertido pois, nessa lógica, quanto maior o y mais pra baixo
 const JLSTZ_KICK_OFFSET_DATA = {
   0: [{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: 0}],
   1: [{x: 0, y: 0},{x: 1, y: 0},{x: 1, y: 1},{x: 0, y: -2},{x: 1, y: -2}],
@@ -229,6 +233,7 @@ const O_KICK_OFFSET_DATA = {
   3: [{x: -1, y: 0}]
 }
 
+// Returns an array[height][width] filled with 0s
 const createEmptyArena = (width, height) => 
 { const matrix = [] 
   while (height--) { 
@@ -237,6 +242,7 @@ const createEmptyArena = (width, height) =>
   return matrix 
 }
 
+// Returns a new piece object
 const createPiece = (posX, posY, tetromino, rotation = 0, kickOffsetData = JLSTZ_KICK_OFFSET_DATA) => {
   return ({
     position: { x: posX, y: posY },
@@ -246,7 +252,8 @@ const createPiece = (posX, posY, tetromino, rotation = 0, kickOffsetData = JLSTZ
   })
 }
 
-const createStartingPiece = tetrominoLetter => {
+// Creates and returns the specified piece in a default position
+const createPlayerPiece = tetrominoLetter => {
   let piece;
   switch(tetrominoLetter){
     case 'I': piece = createPiece(2, -2, tetromino.I, 0, I_KICK_OFFSET_DATA)
@@ -258,20 +265,20 @@ const createStartingPiece = tetrominoLetter => {
   return piece
 }
 
+// Returns a new pixelData object
 const createPixelData = (posX, posY, colorIndex) => {
   return ({
     x: posX, y: posY, color: colorIndex
   })
 }
 
-//É pra isso aqui ser um array vazio que vai se 
-//enchendo de dado dos pixel que não são do player
-//e nem tem cor 0
-//Importante pra colisão
+//Array com dados das posições dos pixels
+//que não são o player e nem tem o valor 0.
+//É usado para checar colisão com os pixels do player
 let pixelData = []
 
 const player = {
-  piece: createStartingPiece('Z'),
+  piece: createPlayerPiece('Z'),
   move: {
     left: () => movePiece(player.piece, -1, 0),
     right: () => movePiece(player.piece, 1, 0),
@@ -284,6 +291,9 @@ const player = {
 }
 
 // POSITION
+
+// Uses the piece X and Y positions to determine the absolute coordinates of
+// all of its pixels in the arena, ignoring pixels with color 0
 const translatePiecePosition = piece => {
   let pieceX = piece.position.x
   let pieceY = piece.position.y
@@ -308,6 +318,7 @@ const translatePiecePosition = piece => {
 }
 
 // DRAWING
+// Given an index (0 - 7), returns a color string (e.g. 'red')
 const getColorByIndex = (index) => COLORS[index]
 
 const drawPixel = (colNumber, rowNumber, startColor, endColor = startColor) => {
@@ -320,6 +331,7 @@ const drawPixel = (colNumber, rowNumber, startColor, endColor = startColor) => {
   context.fillRect(colNumber * PIXEL, rowNumber * PIXEL, PIXEL, PIXEL)
 }
 
+// Translates the pixelData[] information into number values in the arena
 const insertPixelDataIntoArena = () => {
   for(i = 0; i < pixelData.length; i++){
     let pixelRow = pixelData[i].y
@@ -330,6 +342,7 @@ const insertPixelDataIntoArena = () => {
   }
 }
 
+// Translates the piece pixels into number values in the arena
 const insertPieceIntoArena = (piece) => {
   let absolutePosition = translatePiecePosition(piece)
 
@@ -342,7 +355,8 @@ const insertPieceIntoArena = (piece) => {
   }
 }
 
-const clearArenaData = () => {
+// Set all of the arena values to 0
+const clearArenaData = (arena) => {
   for (let row = 0; row < arena.length; row++) {
     for (let col = 0; col < arena[row].length; col++) {
       arena[row][col] = 0
@@ -350,6 +364,8 @@ const clearArenaData = () => {
   }
 }
 
+// Translates the arena values into squares on the canvas
+// Ignores cells with the value 0
 const drawArenaData = () => {
   for (let row = 0; row < arena.length; row++) {
     for (let col = 0; col < arena[row].length; col++) {
@@ -363,6 +379,7 @@ const drawArenaData = () => {
   }
 }
 
+// Prints a representation of the Arena in the Console
 const printArenaData = () => {
   let arenaData = '\n\n\n\n\n\n'
   for (let row = 0; row < arena.length; row++) {
@@ -373,26 +390,30 @@ const printArenaData = () => {
   console.groupEnd()
 }
 
-//COLLISION
-const checkArenaBoundaryCollision = (pixelNextCol, pixelNextRow) => {
-  let yCollision = pixelNextRow < 0 || pixelNextRow > arena.length - 1
-  let xCollision = pixelNextCol < 0 || pixelNextCol > arena[0].length - 1
+// COLLISION
+// Checks if a col|row combination is outside of the arena boundary
+const checkArenaBoundaryCollision = (col, row) => {
+  let yCollision = row < 0 || row > arena.length - 1
+  let xCollision = col < 0 || col > arena[0].length - 1
   return yCollision || xCollision
 }
 
-const checkPixelDataCollision = (pixelNextCol, pixelNextRow) => {
-  containsPixelData = pixelData.filter(pixel => pixel.x === pixelNextCol && pixel.y === pixelNextRow && pixel.color != 0)
+// Checks if a col|row combination is already occupied using the data in PixelData[]
+const checkPixelDataCollision = (col, row) => {
+  containsPixelData = pixelData.filter(pixel => pixel.x === col && pixel.y === row && pixel.color != 0)
   return containsPixelData.length > 0
 }
 
-const hasCollisions = (pixelNextCol, pixelNextRow) => {
-  let boundaryCollision = checkArenaBoundaryCollision(pixelNextCol, pixelNextRow)
-  let pixelCollision = checkPixelDataCollision(pixelNextCol, pixelNextRow)
+// Check if a col|row combination has collision with either the arena boundary or anoter pixel
+const hasCollisions = (col, row) => {
+  let boundaryCollision = checkArenaBoundaryCollision(col, row)
+  let pixelCollision = checkPixelDataCollision(col, row)
   return boundaryCollision || pixelCollision
 }
 
+// Given a piece and its desired X, Y and rotation values, checks if its pixels will collide
 const willPieceCollide = (piece, desiredXAmount = 0, desiredYAmount = 0, rotateAmount = 0) => {
-  let Colliding = false
+  let willCollide = false
   let pieceCoordinates = translatePiecePosition({
     ...piece,
     rotation: piece.rotation + rotateAmount
@@ -401,12 +422,14 @@ const willPieceCollide = (piece, desiredXAmount = 0, desiredYAmount = 0, rotateA
   for(let i = 0; i < pieceCoordinates.length; i++){
     let nextXCoordinates = pieceCoordinates[i].x + desiredXAmount
     let nextYCoordinates = pieceCoordinates[i].y + desiredYAmount
-    Colliding = hasCollisions(nextXCoordinates, nextYCoordinates)
-    if(Colliding) return Colliding
+    willCollide = hasCollisions(nextXCoordinates, nextYCoordinates)
+    if(willCollide) return willCollide
   }
-  return Colliding
+  return willCollide
 }
 
+// Performs checks to try and rotate a piece into one of the possible locations
+// based on the rotation and possible kickOffet data
 const tryForceRotationKick = (piece, rotateAmount) => {
   let currentRotation = piece.rotation
   let targetRotation = piece.rotation + rotateAmount
@@ -432,6 +455,7 @@ const tryForceRotationKick = (piece, rotateAmount) => {
 }
 
 //ROTATING
+// Try rotating a piece clockwise
 const rotateR = piece => {
   let {tetromino, rotation} = piece
   let maxRotation = Object.values(tetromino).length - 1
@@ -439,6 +463,7 @@ const rotateR = piece => {
   tryForceRotationKick(piece, safeRotateAmount)
 }
 
+// Try rotating a piece counter-clockwise
 const rotateL = piece => {
   let {tetromino, rotation} = piece
   let maxRotation = Object.values(tetromino).length - 1
@@ -448,17 +473,20 @@ const rotateL = piece => {
 }
 
 // MOVING
+// Try moving a piece to its desired position
 const movePiece = (piece, desiredXAmount, desiredYAmount) => {
   let willCollide = willPieceCollide(piece, desiredXAmount, desiredYAmount)
   piece.position.x += willCollide? 0 : desiredXAmount
   piece.position.y += willCollide? 0 : desiredYAmount
 }
 
+// Validate if the desired key is presset  (<- acabei de aprender essa palavra)
 const validateEventKey = (event, key) => {
   const { keyCode, which } = event
   return keyCode === key || which === key
 }
 
+// Returns boolean values indicating whether each relevant key is pressed or not
 const getKeysPressedState = (event) => {
   return {
     left: validateEventKey(event, LEFT_ARROW),
@@ -469,15 +497,18 @@ const getKeysPressedState = (event) => {
   }
 }
 
-const getDirectionPressed = (event) => {
+// Returns a string indicating the relevant current key pressed or undefined
+// (e.g. 'right')
+const getCurrentKeyPressed = (event) => {
   let keysPressed = getKeysPressedState(event)
   let keys = Object.keys(keysPressed)
   let directionsPressed = keys.filter((key) => keysPressed[key] === true && key)
   return directionsPressed[0]
 }
 
+// Perform an action according to the key that is currently pressed
 const keyPressed = event => {
-  let direction = getDirectionPressed(event)
+  let direction = getCurrentKeyPressed(event)
 
   switch(direction){
     case 'left': player.move.left()
@@ -500,7 +531,7 @@ document.addEventListener('keydown', event => {
 // UPDATING
 const clear = () => {
   context.clearRect(0,0,CANVASWIDTH, CANVASHEIGHT)
-  clearArenaData()
+  clearArenaData(arena)
 }
 
 const draw = () => {
