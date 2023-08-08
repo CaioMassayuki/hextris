@@ -4,6 +4,7 @@ let context = canvas.getContext('2d')
 let arena = []
 
 // CONSTANTS
+
 const CANVASHEIGHT = canvas.height
 const CANVASWIDTH = canvas.width
 const ARENA_X_LENGTH = 10
@@ -29,7 +30,7 @@ const COLORS = {
 
 // PIECES
 
-// Array representation of every possible tetramino
+// Array representation of every possible tetromino
 // in every possible rotation
 const I_STATES = {
   0: [
@@ -211,7 +212,9 @@ const tetromino = {
 }
 
 // https://tetris.wiki/Super_Rotation_System
-// O eixo y fica invertido pois, nessa lógica, quanto maior o y mais pra baixo
+// Offset used to calculate every possible position when performing a piece rotation
+// (Used to apply "kick" logic)
+// O eixo y fica invertido pois, nessa lógica, um y positivo representa uma posição abaixo
 const JLSTZ_KICK_OFFSET_DATA = {
   0: [{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: 0},{x: 0, y: 0}],
   1: [{x: 0, y: 0},{x: 1, y: 0},{x: 1, y: 1},{x: 0, y: -2},{x: 1, y: -2}],
@@ -252,7 +255,7 @@ const createPiece = (posX, posY, tetromino, rotation = 0, kickOffsetData = JLSTZ
   })
 }
 
-// Creates and returns the specified piece in a default position
+// Creates and returns the specified piece (by letter) in a default position
 const createPlayerPiece = tetrominoLetter => {
   let piece;
   switch(tetrominoLetter){
@@ -272,11 +275,13 @@ const createPixelData = (posX, posY, colorIndex) => {
   })
 }
 
-//Array com dados das posições dos pixels
-//que não são o player e nem tem o valor 0.
-//É usado para checar colisão com os pixels do player
+// Array com dados das posições dos pixels na arena
+// que não são parte da peça do player e nem tem o valor 0.
+// É usado para popular a arena e para 
+// checar colisão com os pixels do player
 let pixelData = []
 
+// Player object
 const player = {
   piece: createPlayerPiece('Z'),
   move: {
@@ -292,7 +297,7 @@ const player = {
 
 // POSITION
 
-// Uses the piece X and Y positions to determine the absolute coordinates of
+// Uses the X and Y positions of the Piece to return the absolute coordinates of
 // all of its pixels in the arena, ignoring pixels with color 0
 const translatePiecePosition = piece => {
   let pieceX = piece.position.x
@@ -318,9 +323,11 @@ const translatePiecePosition = piece => {
 }
 
 // DRAWING
-// Given an index (0 - 7), returns a color string (e.g. 'red')
+
+// Given an index (from 0 to 7), returns a color string (e.g. 'red')
 const getColorByIndex = (index) => COLORS[index]
 
+// Draws a "pixel" (a square) in the canvas of dimensions PIXEL x PIXEL
 const drawPixel = (colNumber, rowNumber, startColor, endColor = startColor) => {
   const grd = context.createLinearGradient(0, 0, CANVASWIDTH, CANVASHEIGHT)
   grd.addColorStop(0, startColor)
@@ -331,7 +338,7 @@ const drawPixel = (colNumber, rowNumber, startColor, endColor = startColor) => {
   context.fillRect(colNumber * PIXEL, rowNumber * PIXEL, PIXEL, PIXEL)
 }
 
-// Translates the pixelData[] information into number values in the arena
+// Transposes the pixelData[] information into number values in the arena
 const insertPixelDataIntoArena = () => {
   for(i = 0; i < pixelData.length; i++){
     let pixelRow = pixelData[i].y
@@ -342,7 +349,7 @@ const insertPixelDataIntoArena = () => {
   }
 }
 
-// Translates the piece pixels into number values in the arena
+// Transposes the pixels of a piece into number values in the arena
 const insertPieceIntoArena = (piece) => {
   let absolutePosition = translatePiecePosition(piece)
 
@@ -364,7 +371,7 @@ const clearArenaData = (arena) => {
   }
 }
 
-// Translates the arena values into squares on the canvas
+// Translates the arena values into "pixels" (squares) on the canvas
 // Ignores cells with the value 0
 const drawArenaData = () => {
   for (let row = 0; row < arena.length; row++) {
@@ -391,6 +398,7 @@ const printArenaData = () => {
 }
 
 // COLLISION
+
 // Checks if a col|row combination is outside of the arena boundary
 const checkArenaBoundaryCollision = (col, row) => {
   let yCollision = row < 0 || row > arena.length - 1
@@ -398,7 +406,7 @@ const checkArenaBoundaryCollision = (col, row) => {
   return yCollision || xCollision
 }
 
-// Checks if a col|row combination is already occupied using the data in PixelData[]
+// Checks if a col|row combination is already occupied by comparing it with the data in PixelData[]
 const checkPixelDataCollision = (col, row) => {
   containsPixelData = pixelData.filter(pixel => pixel.x === col && pixel.y === row && pixel.color != 0)
   return containsPixelData.length > 0
@@ -429,7 +437,7 @@ const willPieceCollide = (piece, desiredXAmount = 0, desiredYAmount = 0, rotateA
 }
 
 // Performs checks to try and rotate a piece into one of the possible locations
-// based on the rotation and possible kickOffet data
+// based on the piece rotation and the piece kickOffset data
 const tryForceRotationKick = (piece, rotateAmount) => {
   let currentRotation = piece.rotation
   let targetRotation = piece.rotation + rotateAmount
@@ -455,7 +463,8 @@ const tryForceRotationKick = (piece, rotateAmount) => {
 }
 
 //ROTATING
-// Try rotating a piece clockwise
+
+// Tries rotating a piece clockwise
 const rotateR = piece => {
   let {tetromino, rotation} = piece
   let maxRotation = Object.values(tetromino).length - 1
@@ -463,7 +472,7 @@ const rotateR = piece => {
   tryForceRotationKick(piece, safeRotateAmount)
 }
 
-// Try rotating a piece counter-clockwise
+// Tries rotating a piece counter-clockwise
 const rotateL = piece => {
   let {tetromino, rotation} = piece
   let maxRotation = Object.values(tetromino).length - 1
@@ -473,14 +482,15 @@ const rotateL = piece => {
 }
 
 // MOVING
-// Try moving a piece to its desired position
+
+// Tries moving a piece to its desired position
 const movePiece = (piece, desiredXAmount, desiredYAmount) => {
   let willCollide = willPieceCollide(piece, desiredXAmount, desiredYAmount)
   piece.position.x += willCollide? 0 : desiredXAmount
   piece.position.y += willCollide? 0 : desiredYAmount
 }
 
-// Validate if the desired key is presset  (<- acabei de aprender essa palavra)
+// Validates if the desired key is pressed unambiguously across clients
 const validateEventKey = (event, key) => {
   const { keyCode, which } = event
   return keyCode === key || which === key
