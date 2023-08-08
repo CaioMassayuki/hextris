@@ -261,7 +261,7 @@ const createPlayerPiece = tetrominoLetter => {
   switch(tetrominoLetter){
     case 'I': piece = createPiece(2, -2, tetromino.I, 0, I_KICK_OFFSET_DATA)
     break;
-    case 'O': piece = createPiece(5, 0, tetromino.O, 0, O_KICK_OFFSET_DATA)
+    case 'O': piece = createPiece(3, 0, tetromino.O, 0, O_KICK_OFFSET_DATA)
     break;
     default: piece = createPiece(4, 0, tetromino[tetrominoLetter], 0, JLSTZ_KICK_OFFSET_DATA)
   }
